@@ -53,32 +53,59 @@ const temas = {
 // bsucar linguagens
 async function fetchLanguages(username, topCount = 5) {
     try {
-        const reposResponse = await fetch(
-            `https://api.github.com/users/${username}/repos?per_page=100&type=owner`,
-            {
-                headers: {
-                    'User-Agent': 'GitHub-Top-Languages-Card',
-                    // 'Authorization': `token ${process.env.GITHUB_TOKEN}`
-                }
+        console.log(`[fetchLanguages] Iniciando busca para usuário: ${username}, topCount: ${topCount}`);
+        
+        const reposUrl = `https://api.github.com/users/${username}/repos?per_page=100&type=owner`;
+        console.log(`[fetchLanguages] Fazendo fetch para: ${reposUrl}`);
+        
+        const reposResponse = await fetch(reposUrl, {
+            headers: {
+                'User-Agent': 'GitHub-Top-Languages-Card',
+                // 'Authorization': `token ${process.env.GITHUB_TOKEN}`
             }
-        );
+        });
+
+        console.log(`[fetchLanguages] Status da resposta dos repositórios: ${reposResponse.status} ${reposResponse.statusText}`);
+        console.log(`[fetchLanguages] Headers da resposta:`, Object.fromEntries(reposResponse.headers.entries()));
 
         if (!reposResponse.ok) {
-            throw new Error('User not found');
+            const errorText = await reposResponse.text();
+            console.error(`[fetchLanguages] Erro ao buscar repositórios:`, errorText);
+            throw new Error(`User not found or API error: ${reposResponse.status} - ${errorText.substring(0, 200)}`);
         }
 
         const repos = await reposResponse.json();
-        const languagePromises = repos
-            .filter(repo => !repo.fork)
-            .map(repo =>
-                fetch(repo.languages_url, {
-                    headers: {
-                        'User-Agent': 'GitHub-Top-Languages-Card',
-                    }
-                }).then(res => res.json())
-            );
+        console.log(`[fetchLanguages] Total de repositórios encontrados: ${repos.length}`);
+        
+        const nonForkRepos = repos.filter(repo => !repo.fork);
+        console.log(`[fetchLanguages] Repositórios não-fork: ${nonForkRepos.length}`);
+        
+        if (nonForkRepos.length === 0) {
+            console.warn(`[fetchLanguages] Nenhum repositório não-fork encontrado para ${username}`);
+        }
+
+        const languagePromises = nonForkRepos.map((repo, index) => {
+            console.log(`[fetchLanguages] Buscando linguagens do repo ${index + 1}/${nonForkRepos.length}: ${repo.name} (${repo.languages_url})`);
+            return fetch(repo.languages_url, {
+                headers: {
+                    'User-Agent': 'GitHub-Top-Languages-Card',
+                }
+            }).then(async (res) => {
+                console.log(`[fetchLanguages] Status da resposta de linguagens para ${repo.name}: ${res.status}`);
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    console.error(`[fetchLanguages] Erro ao buscar linguagens de ${repo.name}:`, errorText);
+                    return {};
+                }
+                return res.json();
+            }).catch((err) => {
+                console.error(`[fetchLanguages] Erro ao buscar linguagens de ${repo.name}:`, err.message);
+                return {};
+            });
+        });
 
         const languagesData = await Promise.all(languagePromises);
+        console.log(`[fetchLanguages] Dados de linguagens recebidos para ${languagesData.length} repositórios`);
         const languageTotals = {};
         languagesData.forEach(repoLangs => {
             Object.entries(repoLangs).forEach(([lang, bytes]) => {
@@ -89,15 +116,23 @@ async function fetchLanguages(username, topCount = 5) {
             .sort((a, b) => b[1] - a[1])
             .slice(0, topCount);
 
-        const totalBytes = sortedLangs.reduce((sum, [, bytes]) => sum + bytes, 0);
+        console.log(`[fetchLanguages] Linguagens ordenadas:`, sortedLangs.map(([lang, bytes]) => `${lang}: ${bytes} bytes`));
 
-        return sortedLangs.map(([lang, bytes]) => ({
+        const totalBytes = sortedLangs.reduce((sum, [, bytes]) => sum + bytes, 0);
+        console.log(`[fetchLanguages] Total de bytes: ${totalBytes}`);
+
+        const result = sortedLangs.map(([lang, bytes]) => ({
             language: lang,
             bytes: bytes,
             percentage: ((bytes / totalBytes) * 100).toFixed(1)
         }));
 
+        console.log(`[fetchLanguages] Resultado final:`, result);
+        return result;
+
     } catch (error) {
+        console.error(`[fetchLanguages] Erro capturado:`, error);
+        console.error(`[fetchLanguages] Stack trace:`, error.stack);
         throw new Error(`Failed to fetch languages: ${error.message}`);
     }
 }
@@ -177,6 +212,12 @@ function escapeXml(unsafe) {
 }
 // main -- nao ta funcionndo, sla pq
 module.exports = async (req, res) => {
+    console.log(`[API] Requisição recebida`);
+    console.log(`[API] Método: ${req.method}`);
+    console.log(`[API] URL: ${req.url}`);
+    console.log(`[API] Query params:`, req.query);
+    console.log(`[API] Headers:`, req.headers);
+    
     // Habilita CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', 'image/svg+xml');
@@ -184,19 +225,34 @@ module.exports = async (req, res) => {
 
     try {
         const { username, theme = 'dark', count = '5', layout = 'compact' } = req.query;
+        console.log(`[API] Parâmetros processados - username: ${username}, theme: ${theme}, count: ${count}, layout: ${layout}`);
+        
         if (!username) {
+            console.error(`[API] Erro: username não fornecido`);
             throw new Error('Username parameter is required');
         }
+        
         const topCount = Math.min(parseInt(count) || 5, 10);
+        console.log(`[API] Iniciando busca de linguagens com topCount: ${topCount}`);
+        
         const langData = await fetchLanguages(username, topCount);
+        console.log(`[API] Linguagens obtidas: ${langData.length} itens`);
+        
         if (langData.length === 0) {
+            console.error(`[API] Erro: Nenhuma linguagem encontrada para ${username}`);
             throw new Error('No languages found');
         }
+        
+        console.log(`[API] Gerando SVG com tema: ${theme}, layout: ${layout}`);
         const svg = generateSVG(username, langData, theme, layout);
+        console.log(`[API] SVG gerado com sucesso, tamanho: ${svg.length} caracteres`);
 
         res.status(200).send(svg);
+        console.log(`[API] Resposta enviada com sucesso`);
 
     } catch (error) {
+        console.error(`[API] Erro na função principal:`, error);
+        console.error(`[API] Stack trace:`, error.stack);
         const errorSvg = `
 <svg width="350" height="120" xmlns="http://www.w3.org/2000/svg">
   <rect width="350" height="120" fill="#1a1a1a" stroke="#ff4444" stroke-width="2" rx="4"/>
