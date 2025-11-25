@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+// Usando fetch nativo do Node.js 18+
 const temas = {
     dark: {
         bg: '#0d1117',
