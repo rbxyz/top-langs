@@ -224,27 +224,29 @@ module.exports = async (req, res) => {
     res.setHeader('Cache-Control', 'public, max-age=3600');
 
     try {
-        const { username, theme = 'dark', count = '5', layout = 'compact' } = req.query;
-        console.log(`[API] Parâmetros processados - username: ${username}, theme: ${theme}, count: ${count}, layout: ${layout}`);
+        const { username, rbxyz, theme = 'dark', count = '5', layout = 'compact' } = req.query;
+        // Aceita tanto 'username' quanto 'rbxyz' como parâmetro
+        const finalUsername = username || rbxyz;
+        console.log(`[API] Parâmetros processados - username: ${finalUsername}, theme: ${theme}, count: ${count}, layout: ${layout}`);
         
-        if (!username) {
-            console.error(`[API] Erro: username não fornecido`);
-            throw new Error('Username parameter is required');
+        if (!finalUsername) {
+            console.error(`[API] Erro: username não fornecido (esperado 'username' ou 'rbxyz' como parâmetro)`);
+            throw new Error('Username parameter is required (use ?username=... or ?rbxyz=...)');
         }
         
         const topCount = Math.min(parseInt(count) || 5, 10);
         console.log(`[API] Iniciando busca de linguagens com topCount: ${topCount}`);
         
-        const langData = await fetchLanguages(username, topCount);
+        const langData = await fetchLanguages(finalUsername, topCount);
         console.log(`[API] Linguagens obtidas: ${langData.length} itens`);
         
         if (langData.length === 0) {
-            console.error(`[API] Erro: Nenhuma linguagem encontrada para ${username}`);
+            console.error(`[API] Erro: Nenhuma linguagem encontrada para ${finalUsername}`);
             throw new Error('No languages found');
         }
         
         console.log(`[API] Gerando SVG com tema: ${theme}, layout: ${layout}`);
-        const svg = generateSVG(username, langData, theme, layout);
+        const svg = generateSVG(finalUsername, langData, theme, layout);
         console.log(`[API] SVG gerado com sucesso, tamanho: ${svg.length} caracteres`);
 
         res.status(200).send(svg);
