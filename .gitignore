@@ -1,0 +1,14 @@
+# Dependências
+node_modules/
+
+# Vercel
+.vercel
+
+# Ambiente
+.env
+.env.local
+
+# Claude
+claude.md
+CLAUDE.md
+.claude/

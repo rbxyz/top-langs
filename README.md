@@ -33,7 +33,7 @@ github-top-languages/
 3. A API estará disponível em:
 
    ```
-   https://seu-projeto.vercel.app/api/top-langs?username=SEU_USER
+   https://moon-top-langs.vercel.app/api/top-langs?username=SEU_USER
    ```
 
 ### Método 2: Via CLI
@@ -50,7 +50,7 @@ vercel --prod
 Após o deploy, adicione no README.md:
 
 ```markdown
-![Top Languages](https://seu-projeto.vercel.app/api/top-langs?username=SEU_USERNAME&theme=dark&count=5)
+![Top Languages](https://moon-top-langs.vercel.app/api/top-langs?username=SEU_USERNAME&theme=dark&count=5)
 ```
 
 ### Parâmetros
@@ -67,25 +67,25 @@ Após o deploy, adicione no README.md:
 **Tema dark:**
 
 ```markdown
-![Top Languages](https://seu-projeto.vercel.app/api/top-langs?username=torvalds)
+![Top Languages](https://moon-top-langs.vercel.app/api/top-langs?username=torvalds)
 ```
 
 **Tema ocean com 3 linguagens:**
 
 ```markdown
-![Top Languages](https://seu-projeto.vercel.app/api/top-langs?username=torvalds&theme=ocean&count=3)
+![Top Languages](https://moon-top-langs.vercel.app/api/top-langs?username=torvalds&theme=ocean&count=3)
 ```
 
 **Tema dracula com 8 linguagens:**
 
 ```markdown
-![Top Languages](https://seu-projeto.vercel.app/api/top-langs?username=torvalds&theme=dracula&count=8)
+![Top Languages](https://moon-top-langs.vercel.app/api/top-langs?username=torvalds&theme=dracula&count=8)
 ```
 
 **Layout horizontal:**
 
 ```markdown
-![Top Languages](https://seu-projeto.vercel.app/api/top-langs?username=torvalds&layout=horizontal&count=6)
+![Top Languages](https://moon-top-langs.vercel.app/api/top-langs?username=torvalds&layout=horizontal&count=6)
 ```
 
 ## Otimizações
@@ -115,7 +115,7 @@ Isso eleva o limite para cerca de 5.000 requisições por hora.
 O SVG possui cache de 1 hora. Para atualizar manualmente:
 
 ```markdown
-![Top Languages](https://seu-projeto.vercel.app/api/top-langs?username=SEU_USER&t=20231125)
+![Top Languages](https://moon-top-langs.vercel.app/api/top-langs?username=SEU_USER&t=20231125)
 ```
 
 ## Temas Disponíveis

@@ -3,60 +3,361 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Moontalk – Apresentação do Projeto</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    // Configurações customizadas do Tailwind (cores, fontes, etc.)
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: "hsl(210, 70%, 55%)",
-            secondary: "hsl(210, 15%, 20%)",
-            accent: "hsl(45, 90%, 55%)",
-          },
-          fontFamily: {
-            sans: ["Inter", "system-ui", "sans-serif"],
-          },
-        },
-      },
-    };
-  </script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <title>Moontalk — Top Languages para o seu README</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --surface: #ffffff;
+      --surface-alt: #f6f8fa;
+      --border: #d0d7de;
+      --border-strong: #afb8c1;
+      --text: #1f2328;
+      --text-muted: #59636e;
+      --accent: #0969da;
+      --accent-hover: #0757ba;
+      --radius: 8px;
+      --shadow: 0 1px 2px rgba(31, 35, 40, 0.06), 0 3px 8px rgba(31, 35, 40, 0.04);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --surface: #161b22;
+        --surface-alt: #0d1117;
+        --border: #30363d;
+        --border-strong: #444c56;
+        --text: #e6edf3;
+        --text-muted: #9198a1;
+        --accent: #4493f8;
+        --accent-hover: #58a6ff;
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 3px 8px rgba(0, 0, 0, 0.2);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      width: 28px; height: 28px; border-radius: 6px;
+      background: var(--text); color: var(--bg);
+      display: grid; place-items: center;
+      font-weight: 700; font-size: 15px;
+    }
+    .brand h1 { font-size: 17px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+    .brand span { color: var(--text-muted); font-weight: 400; }
+
+    .hero { padding: 56px 0 40px; }
+    .hero h2 {
+      font-size: 34px; line-height: 1.15; font-weight: 700;
+      letter-spacing: -0.02em; margin: 0 0 12px;
+    }
+    .hero p { font-size: 18px; color: var(--text-muted); margin: 0; max-width: 620px; }
+
+    .grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+      align-items: start; padding-bottom: 56px;
+    }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow);
+    }
+    .card h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
+    .card .card-sub { margin: 0 0 20px; font-size: 13px; color: var(--text-muted); }
+
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-size: 13px; font-weight: 600;
+      margin-bottom: 6px; color: var(--text);
+    }
+    .field input, .field select {
+      width: 100%; padding: 8px 12px; font-size: 14px;
+      background: var(--surface-alt); color: var(--text);
+      border: 1px solid var(--border); border-radius: 6px;
+      font-family: inherit; transition: border-color .15s, box-shadow .15s;
+    }
+    .field input:focus, .field select:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .preview-frame {
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surface-alt); padding: 16px;
+      min-height: 220px; display: grid; place-items: center;
+      overflow: auto;
+    }
+    .preview-frame img { max-width: 100%; height: auto; display: block; }
+    .preview-empty { color: var(--text-muted); font-size: 14px; text-align: center; }
+
+    .output { margin-top: 20px; }
+    .output-label {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .output-label span { font-size: 13px; font-weight: 600; }
+    .code {
+      position: relative; background: var(--surface-alt);
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 12px 14px; font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 12.5px; line-height: 1.6; color: var(--text);
+      word-break: break-all; white-space: pre-wrap; margin: 0 0 12px;
+    }
+    .btn {
+      appearance: none; cursor: pointer; font-family: inherit;
+      font-size: 13px; font-weight: 600; padding: 6px 12px;
+      border-radius: 6px; border: 1px solid var(--border-strong);
+      background: var(--surface); color: var(--text);
+      transition: background .15s, border-color .15s;
+    }
+    .btn:hover { background: var(--surface-alt); border-color: var(--accent); }
+    .btn.copied { color: #1a7f37; border-color: #1a7f37; }
+    @media (prefers-color-scheme: dark) { .btn.copied { color: #3fb950; border-color: #3fb950; } }
+
+    .guide { padding: 8px 0 64px; }
+    .guide h3 { font-size: 20px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 20px; }
+    .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+    .steps li {
+      display: grid; grid-template-columns: 32px 1fr; gap: 14px; align-items: start;
+    }
+    .steps .num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--surface-alt); border: 1px solid var(--border);
+      display: grid; place-items: center; font-size: 13px; font-weight: 700;
+      color: var(--text);
+    }
+    .steps .body strong { display: block; font-size: 14px; margin-bottom: 2px; }
+    .steps .body p { margin: 0; font-size: 14px; color: var(--text-muted); }
+    .steps code {
+      background: var(--surface-alt); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 5px; font-size: 12.5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 24px 0;
+      font-size: 13px; color: var(--text-muted);
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans">
-  <!-- Hero Section -->
-  <section class="bg-primary text-white py-20 px-6 md:px-12 flex flex-col items-center text-center">
-    <h1 class="text-4xl md:text-5xl font-bold mb-4">Moontalk</h1>
-    <p class="text-lg md:text-xl max-w-2xl">
-      Uma api para devs usarem e gerar svg no README.md do seu projeto.
-    </p>
-    <a href="#sobre" class="mt-6 inline-block bg-white text-primary font-semibold py-2 px-6 rounded-full shadow-lg hover:bg-gray-100 transition">
-      Saiba Mais
-    </a>
-  </section>
-
-  <!-- Sobre o Projeto -->
-  <section id="sobre" class="py-16 px-6 md:px-12 max-w-5xl mx-auto">
-    <h2 class="text-3xl font-semibold text-secondary mb-6">Sobre o Moontalk</h2>
-    <p class="mb-4 text-gray-700 leading-relaxed">
-      O Moontalk foi criado para facilitar a geração de svg no README.md do seu projeto.
-    </p>
-    <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-      <li class="bg-white p-6 rounded-xl shadow hover:shadow-md transition">
-        <h3 class="text-xl font-medium text-primary mb-2">Geração de SVG</h3>
-        <p class="text-gray-600">Geração de svg no README.md do seu projeto.</p>
-      </li>
-    </ul>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-secondary text-white py-8 px-6 md:px-12 text-center">
-    <p class="mb-2">© 2025 Moontalk. Todos os direitos reservados.</p>
-    <div class="flex justify-center space-x-4">
-      <a href="https://github.com/rbxyz/top-langs" class="hover:underline">GitHub</a>
+<body>
+  <header>
+    <div class="wrap brand">
+      <div class="brand-mark">M</div>
+      <h1>Moontalk <span>· Top Languages</span></h1>
     </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h2>Seu card de linguagens, direto no perfil do GitHub</h2>
+      <p>Coloque seu usuário, escolha o estilo e copie a linha pronta para o README. Sem cadastro, sem instalação.</p>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h3>Gerar card</h3>
+        <p class="card-sub">Os campos abaixo montam a URL automaticamente.</p>
+
+        <div class="field">
+          <label for="username">Usuário do GitHub</label>
+          <input id="username" type="text" placeholder="ex.: rbxyz" autocomplete="off" spellcheck="false" />
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="theme">Tema</label>
+            <select id="theme">
+              <option value="dark">dark</option>
+              <option value="light">light</option>
+              <option value="ocean">ocean</option>
+              <option value="sunset">sunset</option>
+              <option value="github">github</option>
+              <option value="dracula">dracula</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="count">Linguagens</label>
+            <select id="count">
+              <option>3</option><option>4</option><option selected>5</option>
+              <option>6</option><option>7</option><option>8</option>
+              <option>9</option><option>10</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="layout">Layout</label>
+          <select id="layout">
+            <option value="compact">compact</option>
+            <option value="horizontal">horizontal</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Pré-visualização</h3>
+        <p class="card-sub">Atualiza conforme você digita.</p>
+        <div class="preview-frame" id="previewFrame">
+          <span class="preview-empty" id="previewEmpty">Digite um usuário para ver o card.</span>
+          <img id="previewImg" alt="Pré-visualização do card" style="display:none" />
+        </div>
+
+        <div class="output" id="output" style="display:none">
+          <div class="output-label">
+            <span>Markdown para o README</span>
+            <button class="btn" id="copyMd" type="button">Copiar</button>
+          </div>
+          <div class="code" id="codeMd"></div>
+
+          <div class="output-label">
+            <span>Só a URL</span>
+            <button class="btn" id="copyUrl" type="button">Copiar</button>
+          </div>
+          <div class="code" id="codeUrl"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="guide">
+      <h3>Como colocar no seu perfil</h3>
+      <ol class="steps">
+        <li>
+          <div class="num">1</div>
+          <div class="body">
+            <strong>Digite seu usuário acima</strong>
+            <p>Use exatamente o mesmo nome da sua conta do GitHub e escolha tema e layout.</p>
+          </div>
+        </li>
+        <li>
+          <div class="num">2</div>
+          <div class="body">
+            <strong>Copie o Markdown gerado</strong>
+            <p>Clique em <em>Copiar</em> no bloco “Markdown para o README”.</p>
+          </div>
+        </li>
+        <li>
+          <div class="num">3</div>
+          <div class="body">
+            <strong>Abra o repositório do seu perfil</strong>
+            <p>É o repositório com o mesmo nome do seu usuário — por exemplo <code>rbxyz/rbxyz</code>. Se ainda não existir, crie um repositório público com esse nome e um arquivo <code>README.md</code>.</p>
+          </div>
+        </li>
+        <li>
+          <div class="num">4</div>
+          <div class="body">
+            <strong>Cole no README.md e salve</strong>
+            <p>Cole a linha copiada onde quiser que o card apareça e faça o commit. Pronto — ele aparece no seu perfil.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <span>Moontalk — card de linguagens em SVG</span>
+    <a href="https://github.com/rbxyz/top-langs">Código no GitHub</a>
   </footer>
+
+  <script>
+    (function () {
+      var BASE = "https://moon-top-langs.vercel.app/api/top-langs";
+      var els = {
+        username: document.getElementById("username"),
+        theme: document.getElementById("theme"),
+        count: document.getElementById("count"),
+        layout: document.getElementById("layout"),
+        img: document.getElementById("previewImg"),
+        empty: document.getElementById("previewEmpty"),
+        output: document.getElementById("output"),
+        codeMd: document.getElementById("codeMd"),
+        codeUrl: document.getElementById("codeUrl"),
+        copyMd: document.getElementById("copyMd"),
+        copyUrl: document.getElementById("copyUrl")
+      };
+
+      function buildUrl() {
+        var user = els.username.value.trim();
+        if (!user) return null;
+        var params = new URLSearchParams({
+          username: user,
+          theme: els.theme.value,
+          count: els.count.value,
+          layout: els.layout.value
+        });
+        return BASE + "?" + params.toString();
+      }
+
+      function render() {
+        var url = buildUrl();
+        if (!url) {
+          els.img.style.display = "none";
+          els.empty.style.display = "";
+          els.output.style.display = "none";
+          return;
+        }
+        els.img.src = url;
+        els.img.style.display = "";
+        els.empty.style.display = "none";
+        els.output.style.display = "";
+        els.codeUrl.textContent = url;
+        els.codeMd.textContent = "![Top Languages](" + url + ")";
+      }
+
+      function copy(text, btn) {
+        function done() {
+          var original = btn.textContent;
+          btn.textContent = "Copiado!";
+          btn.classList.add("copied");
+          setTimeout(function () {
+            btn.textContent = original;
+            btn.classList.remove("copied");
+          }, 1600);
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done, function () { fallback(text, done); });
+        } else {
+          fallback(text, done);
+        }
+      }
+      function fallback(text, done) {
+        var ta = document.createElement("textarea");
+        ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand("copy"); done(); } catch (e) {}
+        document.body.removeChild(ta);
+      }
+
+      ["input", "change"].forEach(function (ev) {
+        els.username.addEventListener(ev, render);
+      });
+      [els.theme, els.count, els.layout].forEach(function (el) {
+        el.addEventListener("change", render);
+      });
+      els.copyMd.addEventListener("click", function () {
+        copy("![Top Languages](" + buildUrl() + ")", els.copyMd);
+      });
+      els.copyUrl.addEventListener("click", function () {
+        copy(buildUrl(), els.copyUrl);
+      });
+    })();
+  </script>
 </body>
 </html>
