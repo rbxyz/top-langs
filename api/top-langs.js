@@ -115,7 +115,7 @@ function generateSVG(username, langData, themeName = 'dark', layout = 'compact')
     if (layout === 'compact') {
         const cardHeight = 140 + (langData.length * 35);
         return `
-<svg width="350" height="${cardHeight}" xmlns="http://www.w3.org/2000/svg">
+<svg width="350" height="${cardHeight}" viewBox="0 0 350 ${cardHeight}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
       .header { font: 600 18px 'Segoe UI', Ubuntu, sans-serif; fill: ${theme.title}; }
@@ -134,9 +134,7 @@ function generateSVG(username, langData, themeName = 'dark', layout = 'compact')
     <text x="0" y="15" class="lang-name">${escapeXml(lang.language)}</text>
     <text x="290" y="15" text-anchor="end" class="percentage">${lang.percentage}%</text>
     <rect x="0" y="20" width="290" height="8" fill="${theme.barBg}" rx="4"/>
-    <rect x="0" y="20" width="${(lang.percentage / 100) * 290}" height="8" fill="${theme.bars[idx % theme.bars.length]}" rx="4">
-      <animate attributeName="width" from="0" to="${(lang.percentage / 100) * 290}" dur="0.8s" fill="freeze"/>
-    </rect>
+    <rect x="0" y="20" width="${(lang.percentage / 100) * 290}" height="8" fill="${theme.bars[idx % theme.bars.length]}" rx="4"/>
   </g>
   `).join('')}
   <text x="175" y="${cardHeight - 15}" text-anchor="middle" class="footer">
@@ -147,7 +145,7 @@ function generateSVG(username, langData, themeName = 'dark', layout = 'compact')
         const cardWidth = 500;
         const cardHeight = 200;
         return `
-<svg width="${cardWidth}" height="${cardHeight}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${cardWidth}" height="${cardHeight}" viewBox="0 0 ${cardWidth} ${cardHeight}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
       .header { font: 600 18px 'Segoe UI', Ubuntu, sans-serif; fill: ${theme.title}; }
