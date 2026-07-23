@@ -115,7 +115,7 @@ function generateSVG(username, langData, themeName = 'dark', layout = 'compact')
     if (layout === 'compact') {
         const cardHeight = 140 + (langData.length * 35);
         return `
-<svg width="350" height="${cardHeight}">
+<svg width="350" height="${cardHeight}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <style>
       .header { font: 600 18px 'Segoe UI', Ubuntu, sans-serif; fill: ${theme.title}; }
