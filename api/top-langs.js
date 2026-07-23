@@ -50,32 +50,41 @@ const temas = {
     }
 };
 
-// bsucar linguagens
+// Monta os headers da requisição, incluindo o token quando disponível.
+// Sem token, a API do GitHub limita a 60 req/hora por IP (compartilhado na Vercel).
+// Com GITHUB_TOKEN configurado, o limite sobe para ~5.000 req/hora.
+function githubHeaders() {
+    const headers = { 'User-Agent': 'GitHub-Top-Languages-Card' };
+    if (process.env.GITHUB_TOKEN) {
+        headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+    }
+    return headers;
+}
+
+// busca linguagens
 async function fetchLanguages(username, topCount = 5) {
-    try {
-        const reposResponse = await fetch(
-            `https://api.github.com/users/${username}/repos?per_page=100&type=owner`,
-            {
-                headers: {
-                    'User-Agent': 'GitHub-Top-Languages-Card',
-                    // 'Authorization': `token ${process.env.GITHUB_TOKEN}`
-                }
-            }
-        );
+    const reposResponse = await fetch(
+        `https://api.github.com/users/${username}/repos?per_page=100&type=owner`,
+        { headers: githubHeaders() }
+    );
 
-        if (!reposResponse.ok) {
-            throw new Error('User not found');
+    if (!reposResponse.ok) {
+        if (reposResponse.status === 404) {
+            throw new Error(`User "${username}" not found`);
         }
+        if (reposResponse.status === 403) {
+            throw new Error('GitHub rate limit reached — configure GITHUB_TOKEN');
+        }
+        throw new Error(`GitHub API error (${reposResponse.status})`);
+    }
 
+    try {
         const repos = await reposResponse.json();
         const languagePromises = repos
             .filter(repo => !repo.fork)
             .map(repo =>
-                fetch(repo.languages_url, {
-                    headers: {
-                        'User-Agent': 'GitHub-Top-Languages-Card',
-                    }
-                }).then(res => res.json())
+                fetch(repo.languages_url, { headers: githubHeaders() })
+                    .then(res => res.json())
             );
 
         const languagesData = await Promise.all(languagePromises);
